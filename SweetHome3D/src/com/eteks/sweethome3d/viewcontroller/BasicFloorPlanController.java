@@ -41,6 +41,8 @@ public class BasicFloorPlanController extends PlanController implements Controll
     }
     return this.basicPlanView;
   }
+  
+ 
 
   @SuppressWarnings("unchecked")
   public void setNonBasicItemsInvisible(){
