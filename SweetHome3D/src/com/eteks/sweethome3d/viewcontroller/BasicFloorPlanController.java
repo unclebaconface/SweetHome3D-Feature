@@ -8,7 +8,7 @@ import com.eteks.sweethome3d.swing.HomePane;
 import com.eteks.sweethome3d.viewcontroller.*;
 
 //MVC controller for BasicFloorPlanView
-public class BasicFloorPlanController extends PlanController implements Controller {
+public class BasicFloorPlanController extends PlanController{
   List<Selectable> allItems;
   List<Selectable> basicItems;
   List<Selectable> nonBasicItems;
@@ -35,58 +35,27 @@ public class BasicFloorPlanController extends PlanController implements Controll
     this.undoSupport = undoSupport;
   }
   
-  public BasicPlanView getView(){
-    if(this.basicPlanView == null){
-      this.basicPlanView = this.viewFactory.createBasicFloorPlanView(this.home, this.preferences, this);
-    }
-    return this.basicPlanView;
-  }
-  
- 
-
-  @SuppressWarnings("unchecked")
-  public void setNonBasicItemsInvisible(){
-      allItems = this.home.getSelectedItems();
-      nonBasicItems = getItemsNotPartOfBasePlan(allItems);
-      
-      @SuppressWarnings("unchecked")
-      List<HomePieceOfFurniture> nonBasicFurnitureItems = (List<HomePieceOfFurniture>)(List<?>) nonBasicItems;
-      
-      for (HomePieceOfFurniture item : nonBasicFurnitureItems){
-        item.setVisible(visibleFalse);
+  public List<Selectable> getBasicItems(){
+    
+    for(Selectable item : this.home.getFurniture()){
+      if(!allItems.contains(item)){
+        allItems.add(item);
       }
     }
-}
-  
-  /*
-  
-  public void exportBasicFloorPlanToSVG() {
-    final String svgName = getView().showExportToSVGDialog(this.home.getName());    
-    if (svgName != null) {
-      // Export 3D view in a threaded task
-      Callable<Void> exportToSvgTask = new Callable<Void>() {
-            public Void call() throws RecorderException {
-              getView().exportToSVG(svgName);
-              return null;
-            }
-          };
-      ThreadedTaskController.ExceptionHandler exceptionHandler = 
-          new ThreadedTaskController.ExceptionHandler() {
-            public void handleException(Exception ex) {
-              if (!(ex instanceof InterruptedRecorderException)) {
-                if (ex instanceof RecorderException) {
-                  String message = preferences.getLocalizedString(
-                      HomeController.class, "exportToSVGError", svgName);
-                  getView().showError(message);
-                } else {
-                  ex.printStackTrace();
-                }
-              }
-            }
-          };
-      new ThreadedTaskController(exportToSvgTask, 
-          this.preferences.getLocalizedString(HomeController.class, "exportToSVGMessage"), exceptionHandler, 
-          this.preferences, this.viewFactory).executeTask(getView());
-    }
+    
+    for(Wall item : this.home.getWalls()){
+      if(!allItems.contains(item)){
+        allItems.add((Wall)item);
+        }    
+      }
+    
+    for(Room item: this.home.getRooms()){
+      if(!allItems.contains(item)){
+        allItems.add((Room)item);
+        }    
+      }
+    basicItems = getItemsPartOfBasePlan(allItems);
+    return basicItems;
   }
-  }*/
+}
+

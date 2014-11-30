@@ -1,58 +1,96 @@
 package com.eteks.sweethome3d.swing;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.*;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.undo.UndoableEditSupport;
+
 import com.eteks.sweethome3d.model.*;
 import com.eteks.sweethome3d.viewcontroller.*;
+import org.freehep.*;
+import org.freehep.util.export.ExportDialog;
 
-import org.freehep.graphicsio.ImageConstants;
-import org.freehep.graphicsio.svg.SVGGraphics2D;
-import org.freehep.util.UserProperties;
-
-import java.io.*;
-
-public class BasicFloorPlanComponent extends PlanComponent {
+public class BasicFloorPlanComponent {
+  List<Selectable> basicItems;
+  List<Wall> wallItems;
+  List<Room> roomItems;
+  List<HomeDoorOrWindow> doorWindowItems;
+  List<HomePieceOfFurniture> furnitureItems;
   Home home;
   UserPreferences preferences;
-  PlanController controller;
-  List<Selectable> basicHomeItems;
-  List<Selectable> allItems;
-  PlanComponent component;
-  Rectangle2D itemBounds;
-  Dimension imageSize;
-  Float imageScale;
-  SVGGraphics2D export;
-  OutputStream output;
+  BasicFloorPlanController controller; 
+  BasicFloorPlanPanel panel;
+  JFrame frameMan;
   
-
-  public BasicFloorPlanComponent(Home home, UserPreferences preferences, 
-                                 BasicFloorPlanController controller){
-    super(home, preferences, controller);
+  public BasicFloorPlanComponent(Home home, UserPreferences preferences,
+                                BasicFloorPlanController controller){
     this.home = home;
     this.preferences = preferences;
     this.controller = controller;
-    this.allItems = new ArrayList<Selectable>();
-    this.basicHomeItems = new ArrayList<Selectable>();
     
+    basicItems = new ArrayList<Selectable>();
+    wallItems = new ArrayList<Wall>();
+    roomItems = new ArrayList<Room>();
+    doorWindowItems = new ArrayList<HomeDoorOrWindow>();
+    furnitureItems = new ArrayList<HomePieceOfFurniture>();
+    
+    frameMan = new JFrame("Basic Floor Plan");
+
   }
   
-  public void exportToSVG() throws InterruptedIOException{
-   allItems = component.getPaintedItems();
-   
-   basicHomeItems = controller.getItemsPartOfBasePlan(allItems);
-   
-   itemBounds = component.getItemsBounds(null, basicHomeItems);
-   imageScale = 1f;
-   
-   imageSize = new Dimension((int)Math.ceil(itemBounds.getWidth() * imageScale), 
-       (int)Math.ceil(itemBounds.getHeight() * imageScale));
-   
-   export = new SVGGraphics2D(output, imageSize);
-   export.startExport();
-   component.paintContent(export, imageScale, PaintMode.EXPORT);
-   export.endExport();
   
+  public List<Wall> getWallList(){
+    return wallItems;
   }
-}
+  
+  public List<Room> getRoomList(){
+    return roomItems;
+  }
+  
+  public List<HomeDoorOrWindow> getDoorWindowList(){
+    return doorWindowItems;
+  }
+  
+  public List<HomePieceOfFurniture> getFurnitureList(){
+    return furnitureItems;
+  }
+  
+  public void drawBasicFloorPlan(){
+   basicItems = controller.getBasicItems();
+   for(Selectable item : basicItems){
+     if(item instanceof Room ){
+       roomItems.add((Room) item);
+     }
+     
+     else if(item instanceof Wall){
+       wallItems.add((Wall) item);
+     }
+     
+     else if(item instanceof HomeDoorOrWindow){
+       doorWindowItems.add((HomeDoorOrWindow) item);
+     }
+     
+     else if(item instanceof HomePieceOfFurniture){
+       furnitureItems.add((HomePieceOfFurniture) item);
+     }
+   }
+   
+   panel = new BasicFloorPlanPanel();
+   frameMan.setVisible(true);
+   frameMan.setSize(450, 260);
+   frameMan.add(panel);
+  }
+  
+  public void exportFloorPlan(){
+    ExportDialog exportGuy = new ExportDialog();
+    exportGuy.showExportDialog(frameMan, "Save File", panel, "Basic Floor Plan");
+  }
+  }
+
