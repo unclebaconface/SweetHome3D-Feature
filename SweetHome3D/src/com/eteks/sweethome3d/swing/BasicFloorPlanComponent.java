@@ -1,4 +1,5 @@
 package com.eteks.sweethome3d.swing;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -28,6 +29,8 @@ public class BasicFloorPlanComponent {
   BasicFloorPlanController controller; 
   BasicFloorPlanPanel panel;
   JFrame frameMan;
+  int width;
+  int height;
   
   public BasicFloorPlanComponent(Home home, UserPreferences preferences,
                                 BasicFloorPlanController controller){
@@ -45,6 +48,9 @@ public class BasicFloorPlanComponent {
 
   }
   
+  public List<Selectable> getBasicList(){
+    return basicItems;
+  }
   
   public List<Wall> getWallList(){
     return wallItems;
@@ -84,8 +90,19 @@ public class BasicFloorPlanComponent {
    
    panel = new BasicFloorPlanPanel();
    frameMan.setVisible(true);
-   frameMan.setSize(450, 260);
-   frameMan.add(panel);
+   frameMan.setLayout(new BorderLayout());
+
+   frameMan.getContentPane().add(panel, BorderLayout.CENTER);
+
+   width = (panel.getXMax() - panel.getXMin());
+   height = (panel.getYMax() - panel.getYMin());
+   
+
+   System.out.println(width);
+   System.out.println(height);
+   
+   
+   frameMan.setSize(width + (width/2), height+(width/2));
   }
   
   public void exportFloorPlan(){
