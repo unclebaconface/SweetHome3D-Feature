@@ -7,13 +7,13 @@ import com.eteks.sweethome3d.model.*;
 import com.eteks.sweethome3d.swing.HomePane;
 import com.eteks.sweethome3d.viewcontroller.*;
 
-//MVC controller for BasicFloorPlanView
+//Class responsible for gathering of basic items from all items
+//Extends features of PlanController by adding the option to only
+//export basic floor plan items (walls, windows, doors, plumbing,etc)
 public class BasicFloorPlanController extends PlanController{
   List<Selectable> allItems;
   List<Selectable> basicItems;
   List<Selectable> nonBasicItems;
-  Boolean visibleFalse = false;
-  private BasicPlanView basicPlanView;
   private final Home                  home;
   private final UserPreferences       preferences;
   private final ViewFactory           viewFactory;
@@ -24,6 +24,7 @@ public class BasicFloorPlanController extends PlanController{
                                   ViewFactory viewFactory, 
                                   ContentManager contentManager,
                                   UndoableEditSupport undoSupport){
+    //required call to super class constructor
     super(home, preferences, viewFactory, contentManager, undoSupport);
     this.basicItems = new ArrayList<Selectable>();
     this.nonBasicItems = new ArrayList<Selectable>();
@@ -36,7 +37,8 @@ public class BasicFloorPlanController extends PlanController{
   }
   
   public List<Selectable> getBasicItems(){
-    
+    //go through all types of objects in home (furniture, walls, rooms)
+    //add to list of total objects
     for(Selectable item : this.home.getFurniture()){
       if(!allItems.contains(item)){
         allItems.add(item);
@@ -54,7 +56,10 @@ public class BasicFloorPlanController extends PlanController{
         allItems.add((Room)item);
         }    
       }
+    //pass total item list to getItemsPartOfBasePlan method implemented in PlanController
+    //store list in basicItems
     basicItems = getItemsPartOfBasePlan(allItems);
+    //return basicItems to be accessible by other classes
     return basicItems;
   }
 }

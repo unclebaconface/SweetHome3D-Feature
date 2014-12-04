@@ -242,7 +242,7 @@ public class HomePane extends JRootPane implements HomeView {
     updateFocusTraversalPolicy();
     JMenuBar homeMenuBar = createMenuBar(home, preferences, controller);
     
-    //My feature menu!
+    //Add new feature menu to existing menubar
     niceComponent = new BasicFloorPlanComponent(home, preferences, controller.getBasicController());
     floorPlanMenu = new BasicFloorPlanMenu ("Export...");
     niceMenu = new JMenu("Export Basic Floor Plan");
